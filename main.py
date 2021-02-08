@@ -1,4 +1,4 @@
-def single_state_prop(Jmax, J0, M0, I, P, tint, tmax, tsteps):
+def single_state_prop(Jmax, J0M0, I, P, tdef):
 
     import math
     import numpy as np
@@ -19,13 +19,13 @@ def single_state_prop(Jmax, J0, M0, I, P, tint, tmax, tsteps):
             v = np.vstack((v, np.vstack((Js, vtemp)).T))
         return np.delete(v, 0, 0)
 
-    def initialstate(J0, M0, N, v):
+    def initialstate(J0M0, N, v):
         """
         Generates a vector representing
         the initial state defined by J0 and M0.
         """
         psi0 = np.zeros(N)
-        index = np.where((v == (0, 0)).all(axis=1))[0]
+        index = np.where((v == J0M0).all(axis=1))[0]
         psi0[index] = 1
         return psi0
 
@@ -60,9 +60,9 @@ def single_state_prop(Jmax, J0, M0, I, P, tint, tmax, tsteps):
     # Conversion factor between atomic time units and ps.
     psauconv = 2.418884*10 ** (-5)
     # Time grid in atomic units
-    time = np.linspace(tint, tmax, num=tsteps)/psauconv
+    time = np.linspace(tdef[0], tdef[1], num=tdef[2])/psauconv
     v = superindex(Jmax)
-    psi0 = initialstate(J0, M0, N, v)
+    psi0 = initialstate(J0M0, N, v)
     # Define the observable.
     observable = costheta(N, v)
     return intpropagation(N, v, psi0, P, observable, time)
